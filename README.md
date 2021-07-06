@@ -4,4 +4,4 @@ A working version of R software package implementing the methods introduced in C
 It can be installed by typing into R:
 
     library(devtools)
-    install_github("bgs25/gridsubsetregression")
+    install_github("bgs25/SubsetGridRegression")
