@@ -5,7 +5,7 @@
 
 using namespace Rcpp;
 
-
+// This is a modified version of a lasso routine provided by Rajen Shah
 
 NumericVector colMax(NumericMatrix mat, bool na_rm=false) {
   NumericVector out = mat(0, _);
