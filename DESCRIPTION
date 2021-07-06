@@ -1,0 +1,13 @@
+Package: SubsetGridRegression
+Type: Package
+Title: Subset Grid Regression for Lasso, Ridge and Logistic Lasso Regression Models with Potential Prior Information
+Version: 1.0.0
+Date: 2021-07-06
+Author: Benjamin Stokell <b.stokell@statslab.cam.ac.uk>, Rajen Shah <R.Shah@statslab.cam.ac.uk>
+Maintainer: Benjamin Stokell <b.stokell@statslab.cam.ac.uk>
+Description: The user can specify an ordering over the variables to their prior ranking of the variables' importances. Models are fitting over a sequence of subsets of exponentially decreasing size, with variables removed respecting the ordering. If none is supplied, the ordering is implied by the sample columns of the design matrix. Cross-validation routines are also included. 
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.3), RcppArmadillo, glmnet, Matrix, RSpectra
+LinkingTo: Rcpp, RcppArmadillo, Matrix, RSpectra
+NeedsCompilation: yes
+RoxygenNote: 7.1.1
