@@ -1,8 +1,8 @@
 #' Computed solution paths for binary response model
 #' 
-#' @name grid_lasso_logistic
+#' @name order_lasso_logistic
 #' 
-#' @description Computes solutions for grid lasso-penalised logistic regression (wrapper for glmnet)
+#' @description Computes solutions for order lasso-penalised logistic regression (wrapper for glmnet)
 #' 
 #' @param x Design matrix, n x p
 #' @param y Vector of responses, length n
@@ -26,12 +26,12 @@
 #' Y = Y + rnorm(50)
 #' Y = as.numeric(Y >= mean(Y))
 #' X = X + matrix(rnorm(50*500), 50, 500)
-#' mod1 = grid_lasso_logistic(X, Y, grid.size = 25)
+#' mod1 = order_lasso_logistic(X, Y, grid.size = 25)
 #' 
 #' @export
 
 # wrapper for using glmnet to fit cross-validated logistic lasso models
-grid_lasso_logistic = function( x = NULL, y, var_order = NULL, lambda = NULL, nlambda = 100L, grid.size = p, grid.size.truncate = grid.size,
+order_lasso_logistic = function( x = NULL, y, var_order = NULL, lambda = NULL, nlambda = 100L, grid.size = p, grid.size.truncate = grid.size,
                                 lambda.min.ratio = ifelse(n<p, 0.01, 0.0001), thresh=1e-10, maxit=1e5) {
   
   # Sometimes estimates diverge; identify why this should be!
@@ -71,7 +71,7 @@ grid_lasso_logistic = function( x = NULL, y, var_order = NULL, lambda = NULL, nl
   
   
   fit = beta_grid
-  attr(fit,"class")<-"grid_lasso_logistic" 
+  attr(fit,"class")<-"order_lasso_logistic" 
   return(fit)
   
   
