@@ -1,4 +1,4 @@
-useDynLib(SubsetGridRegression, .registration=TRUE)
+useDynLib(OrderRegression, .registration=TRUE)
 export(order_lasso)
 export(order_lasso_logistic)
 export(cv_order_lasso)
