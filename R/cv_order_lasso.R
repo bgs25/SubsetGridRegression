@@ -1,8 +1,8 @@
 #' Computes cross-validated solutions for continuous response model
 #' 
-#' @name cv_grid_lasso
+#' @name cv_order_lasso
 #' 
-#' @description Cross-validation wrapper for grid_lasso that computes solutions, selects and fits the optimal model.
+#' @description Cross-validation wrapper for order_lasso that computes solutions, selects and fits the optimal model.
 #' 
 #' @param x Design matrix, n x p. 
 #' @param y Vector of responses, length n.
@@ -44,12 +44,12 @@
 #' Y = X %*% betavec
 #' Y = Y + rnorm(50)
 #' X = X + matrix(rnorm(50*500), 50, 500)
-#' mod1 = cv_grid_lasso(X, Y, grid.size = 50)
+#' mod1 = cv_order_lasso(X, Y, grid.size = 50)
 #' predict(mod1, Z)
 #' 
 #' @export
 
-cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L,
+cv_order_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L,
                           lambda.min.ratio = ifelse(n<p, 0.01, 0.0001), grid.size = p, thresh=1e-10, maxit=1e5, sparse = TRUE, mc.cores=1, return.full.beta = FALSE, 
                           silent = TRUE, early.stopping = TRUE, early.stopping.factor = 0.5, fold_assign = NULL, missing.data = F, psd.method = "enet" ) {
   # simple wrapper to perform cross-validation and return the best model 
@@ -64,12 +64,12 @@ cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
   if ( is.null(fold_assign) ) fold_assign = ceiling(K * (sample(1:n) / n))
   if ( silent == F ) print(paste0("Fitting models in parallel with ", mc.cores, " cores"))
   if ( mc.cores > 1 ) {
-    fits = parallel::mclapply(1:K, function(k) grid_lasso(x[ fold_assign != k, ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
+    fits = parallel::mclapply(1:K, function(k) order_lasso(x[ fold_assign != k, ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
                                                           nlambda = nlambda, sparse = sparse, early.stopping = early.stopping, lambda.min.ratio = lambda.min.ratio, early.stopping.factor = early.stopping.factor, 
                                                           missing.data = missing.data, psd.method = psd.method), mc.cores = mc.cores)
   } else {
     fits = list()
-    for ( k in 1:K ) fits[[ k ]] = grid_lasso(x[ fold_assign != k, ], y[ fold_assign != k ], var_order = var_order, grid.size = grid.size, 
+    for ( k in 1:K ) fits[[ k ]] = order_lasso(x[ fold_assign != k, ], y[ fold_assign != k ], var_order = var_order, grid.size = grid.size, 
                                               nlambda = nlambda, sparse = sparse, early.stopping = early.stopping, lambda.min.ratio = lambda.min.ratio, early.stopping.factor = early.stopping.factor, missing.data = missing.data, psd.method = psd.method)
   }
   if ( silent == F ) print("Models fitted") 
@@ -80,7 +80,7 @@ cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
       for ( l in 1:grid.size ){
         # npred = sum(fold_assign == k)
         # predictions = fits[[ k ]]$mu + scale(x[ which(fold_assign == k), ]) %*% as.matrix(fits[[ k ]]$beta[[ l ]]) * sqrt(npred / (npred - 1))
-        predictions = predict.grid_lasso(fits[[ k ]], x[ fold_assign == k, , drop = FALSE ], l = l)
+        predictions = predict.order_lasso(fits[[ k ]], x[ fold_assign == k, , drop = FALSE ], l = l)
         residuals = y[ which(fold_assign == k) ] - predictions
         cv_err[[ k ]][ l, ] = apply(residuals^2, 2, sum) 
       }
@@ -97,7 +97,7 @@ cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
       } #else if ( psd.method == "hml" ) {
         #XtX1 = admm_positify(XtX1, x) # this is taken from package {hmlasso}
       #}
-      # The following loop to compute the cross-validation error is the computational bottleneck with cv_grid_lasso missing.data = T
+      # The following loop to compute the cross-validation error is the computational bottleneck with cv_order_lasso missing.data = T
       for ( l in 1:grid.size ) {
         
         cv_err[[ k ]][ l, ] = -2 * n * as.vector(Matrix::t(fits[[ k ]]$beta[[ l ]]) %*% matvecprod(t(x1), y1)) + n * sapply(1:nlambda, function(ll) Matrix::t(fits[[ k ]]$beta[[ l ]][ , ll]) %*% XtX1 %*% fits[[ k ]]$beta[[ l ]][ , ll ])
@@ -111,7 +111,7 @@ cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
 
   best.model = which(fullcv_err == min(fullcv_err), arr.ind = T)[ 1, ]
   if ( silent == F ) print(paste0("Fitting final model"))
-  fits = grid_lasso(x, y, var_order = var_order, grid.size = grid.size, grid.size.truncate = best.model[ 1 ], nlambda = nlambda, sparse = sparse, early.stopping = early.stopping, lambda.min.ratio = lambda.min.ratio,
+  fits = order_lasso(x, y, var_order = var_order, grid.size = grid.size, grid.size.truncate = best.model[ 1 ], nlambda = nlambda, sparse = sparse, early.stopping = early.stopping, lambda.min.ratio = lambda.min.ratio,
                     early.stopping.factor = early.stopping.factor, missing.data = missing.data, psd.method = psd.method)
   fit = list()
   fit$mu = fits$mu
@@ -120,6 +120,6 @@ cv_grid_lasso = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
   fit$lambda = fits$lambda
   fit$col.means = fits$col.means
   fit$cv = fullcv_err
-  attr(fit,"class")<-"cv_grid_lasso" 
+  attr(fit,"class")<-"cv_order_lasso" 
   return(fit)
 }
