@@ -1,6 +1,6 @@
 #' Computes grid of predictions for ridge regression for a specific value of lambda
 #' 
-#' @name grid_ridge_lambda
+#' @name order_ridge_lambda
 #' 
 #' @description Computes prediction errors for a grid of ridge regression models for a specified value of lambda
 #' 
@@ -16,7 +16,7 @@
 #' 
 #' @return A vector of errors of length grid.size
 
-grid_ridge_lambda = function( x, z, y, yz, var_order = NULL, lambda, x1x1inv = NULL, grid.size = p, errors_mean = TRUE ) {
+order_ridge_lambda = function( x, z, y, yz, var_order = NULL, lambda, x1x1inv = NULL, grid.size = p, errors_mean = TRUE ) {
   # This is for a specific value of lambda, not a path of solutions. However this does appear to be relatively fast
   p = dim(x)[ 2 ]
   n = length(y)
