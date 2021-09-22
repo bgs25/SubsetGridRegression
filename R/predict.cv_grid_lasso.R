@@ -1,8 +1,8 @@
 #' Predictions for continuous response model
 #' 
-#' @name predict.cv_grid_lasso
+#' @name predict.cv_order_lasso
 #' 
-#' @description Returns predicted response from grid lasso model with new data
+#' @description Returns predicted response from order lasso model with new data
 #' 
 #' @param object Object as returned by grid_lasso or cv_grid_lasso, provided return.list == T
 #' @param newx Design matrix for new observations
@@ -16,7 +16,7 @@
 #' @export
 
 
-predict.cv_grid_lasso = function( object, newx, l = NULL, missing.data = FALSE, psd.method = "enet", ... ) {
+predict.cv_order_lasso = function( object, newx, l = NULL, missing.data = FALSE, psd.method = "enet", ... ) {
   if ( missing.data ) {
     nlambda  = length(object$lambda)
     results = rep(0, nlambda)
