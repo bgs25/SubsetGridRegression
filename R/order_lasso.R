@@ -1,8 +1,8 @@
 #' Computes solution paths for continuous response model
 #' 
-#' @name grid_lasso
+#' @name order_lasso
 #' 
-#' @description Computes solutions for grid lasso method
+#' @description Computes solutions for order lasso method
 #' 
 #' @param x Design matrix, n x p
 #' @param y Vector of responses, length n
@@ -43,14 +43,14 @@
 #' Y = X %*% betavec
 #' Y = Y + rnorm(50)
 #' X = X + matrix(rnorm(50*500), 50, 500)
-#' mod1 = grid_lasso(X, Y, grid.size = 50)
+#' mod1 = order_lasso(X, Y, grid.size = 50)
 #' predict(mod1, Z, 45, 80)
 #' 
 #' @export
 
 
 
-grid_lasso = function(x = NULL, y, XtX = NULL, Xty = NULL, standardize = TRUE, var_order = NULL, lambda = NULL, nlambda = 100L,
+order_lasso = function(x = NULL, y, XtX = NULL, Xty = NULL, standardize = TRUE, var_order = NULL, lambda = NULL, nlambda = 100L,
                       lambda.min.ratio = ifelse(n<p, 0.01, 0.0001), grid.size = p, thresh=1e-10, maxit=1e5, return.list = TRUE, sparse = TRUE, 
                       grid.size.truncate = grid.size, early.stopping = TRUE, early.stopping.factor = 0.5, missing.data = F, psd.method = "enet", enet.scale = F ) {
   # psd.override bypasses line which ensures that the estimate XtX is psd. If overridden then if data are missing then can get XtX with negative eigenvalue causing divergence!
@@ -207,7 +207,7 @@ grid_lasso = function(x = NULL, y, XtX = NULL, Xty = NULL, standardize = TRUE, v
         }
       }
     }
-    attr(fit,"class")<-"grid_lasso" 
+    attr(fit,"class")<-"order_lasso" 
     return(fit)
   } else {
     return(beta_grid)
