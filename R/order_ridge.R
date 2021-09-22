@@ -1,6 +1,6 @@
 #' Computes grid of predictions for ridge regression
 #' 
-#' @name grid_ridge
+#' @name order_ridge
 #' 
 #' @description Computes prediction errors for a grid (over lambda and variable subsets) of ridge regression models
 #' 
@@ -33,13 +33,13 @@
 #' Y = as.vector(X %*% betavec)
 #' Y = Y + rnorm(50)
 #' X = X + matrix(rnorm(50*500), 50, 500)
-#' mod1 = grid_ridge(X, Z, Y, YZ, grid.size = 50)
+#' mod1 = order_ridge(X, Z, Y, YZ, grid.size = 50)
 #' 
 #' @export
 
 
 
-grid_ridge = function( x, z, y, yz, var_order = NULL, lambda = NULL, nlambda = 100, lambda.min.ratio = 1e-5, grid.size = p, lambda.mult = 1e5, errors_mean = TRUE ) {
+order_ridge = function( x, z, y, yz, var_order = NULL, lambda = NULL, nlambda = 100, lambda.min.ratio = 1e-5, grid.size = p, lambda.mult = 1e5, errors_mean = TRUE ) {
 
   p = dim(x)[ 2 ]
   if (is.null(lambda)) {
@@ -62,7 +62,7 @@ grid_ridge = function( x, z, y, yz, var_order = NULL, lambda = NULL, nlambda = 1
   sols = list()
   sols$errors = errors
   sols$lambda = lambda
-  attr(sols,"class")<-"grid_ridge" 
+  attr(sols,"class")<-"order_ridge" 
   return(sols)
 }
 
