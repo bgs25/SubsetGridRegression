@@ -1,5 +1,5 @@
 # glmnet loop for fitting models
-grid_glmnet = function( x, y, grid.size = p, foldassign = NULL, var_order = NULL, lambda = NULL, nlambda = 100, lambda.min.ratio = 0.01, K = 5, binary = F, maxit = 1e5, ...) {
+order_glmnet = function( x, y, grid.size = p, foldassign = NULL, var_order = NULL, lambda = NULL, nlambda = 100, lambda.min.ratio = 0.01, K = 5, binary = F, maxit = 1e5, ...) {
   n = length(y)
   p = dim(x)[ 2 ]
   if ( is.null(foldassign) ) foldassign = ceiling(K * sample(1:n) / n)
@@ -33,6 +33,6 @@ grid_glmnet = function( x, y, grid.size = p, foldassign = NULL, var_order = NULL
   return(model)
 }
 
-predict.grid_glmnet = function( object, newx, ... ) {
+predict.order_glmnet = function( object, newx, ... ) {
   return(predict(object, newx, s = "lambda.min", ...))
 }
