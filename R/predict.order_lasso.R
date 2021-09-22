@@ -1,6 +1,6 @@
 #' Predictions for continuous response model
 #' 
-#' @name predict.grid_lasso
+#' @name predict.order_lasso
 #' 
 #' @description Returns predicted response from grid lasso model with new data
 #' 
@@ -17,7 +17,7 @@
 #' @export
 
 
-predict.grid_lasso = function( object, newx, l = NULL, ll = NULL, missing.data = FALSE, psd.method = "enet", ... ) {
+predict.order_lasso = function( object, newx, l = NULL, ll = NULL, missing.data = FALSE, psd.method = "enet", ... ) {
   if ( missing.data ) {
     nlambda  = length(object$lambda)
     results = rep(0, nlambda)
