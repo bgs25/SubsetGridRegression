@@ -1,8 +1,8 @@
 #' Computes cross-validated solution for ridge regression
 #' 
-#' @name cv_grid_ridge
+#' @name cv_order_ridge
 #' 
-#' @description Cross-validation wrapper for grid_ridge that computes solutions, selects and fits the optimal model.
+#' @description Cross-validation wrapper for order_ridge that computes solutions, selects and fits the optimal model.
 #' 
 #' @param x Design matrix, n x p. 
 #' @param y Vector of responses, length n.
@@ -31,11 +31,11 @@
 #' Y = as.vector(X %*% betavec)
 #' Y = Y + rnorm(50)
 #' X = X + matrix(rnorm(50*100), 50, 100)
-#' mod1 = cv_grid_ridge(X, Y, grid.size = 50)
+#' mod1 = cv_order_ridge(X, Y, grid.size = 50)
 #' 
 #' @export
 
-cv_grid_ridge = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L, lambda.min.ratio = ifelse(n<p, 0.01, 0.0001),
+cv_order_ridge = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L, lambda.min.ratio = ifelse(n<p, 0.01, 0.0001),
                           grid.size = p, lambda.mult = 1e5, fold_assign = NULL ) {
   # First setup the path of lambdas and the fold assignments, as with grid lasso method. Then compute the predictions
   # and fit the final model on all the data for the best model found
@@ -49,7 +49,7 @@ cv_grid_ridge = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
   
   for ( k in 1:K ) {
     print(paste0("Computing solutions for fold ", k))
-    cv_err[[ k ]] = grid_ridge(x[ fold_assign != k, ], x[ fold_assign == k, ], y[ fold_assign != k ], 
+    cv_err[[ k ]] = order_ridge(x[ fold_assign != k, ], x[ fold_assign == k, ], y[ fold_assign != k ], 
                                               y[ fold_assign == k ], lambda = lambda, nlambda = nlambda, lambda.min.ratio = lambda.min.ratio,
                                               grid.size = grid.size, var_order = var_order, lambda.mult = lambda.mult, errors_mean = FALSE )
     cv_err[[ k ]] = cv_err[[ k ]]$errors
@@ -84,6 +84,6 @@ cv_grid_ridge = function( x, y, K = 5, var_order = NULL, lambda = NULL, nlambda 
   fit$beta[ var_order[ (grid_seq[ best_mod[ 1 ] ] + 1):p ] ] = obj1$v %*% diag(1/(obj1$d^2 + lambda)) %*% diag(obj1$d) %*% t(obj1$u) %*% y
   fit$cv = cv_err
   fit$lambda = lambda_path
-  attr(fit,"class")<-"cv_grid_ridge" 
+  attr(fit,"class")<-"cv_order_ridge" 
   return(fit)
 }
