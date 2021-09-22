@@ -1,8 +1,8 @@
 #' Computes cross-validated solutions for binary response model
 #' 
-#' @name cv_grid_lasso_logistic
+#' @name cv_order_lasso_logistic
 #' 
-#' @description Cross-validation wrapper for grid_lasso_logistic that computes solutions, selects and fits the optimal model.
+#' @description Cross-validation wrapper for order_lasso_logistic that computes solutions, selects and fits the optimal model.
 #' 
 #' @param x Design matrix, n x p. 
 #' @param y Vector of responses, length n.
@@ -34,11 +34,11 @@
 #' Y = Y + rnorm(50)
 #' Y = as.numeric(Y >= mean(Y))
 #' X = X + matrix(rnorm(50*500), 50, 500)
-#' mod1 = cv_grid_lasso_logistic(X, Y, grid.size = 25)
+#' mod1 = cv_order_lasso_logistic(X, Y, grid.size = 25)
 #' 
 #' @export
 
-cv_grid_lasso_logistic = function( x = NULL, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L, grid.size = p,
+cv_order_lasso_logistic = function( x = NULL, y, K = 5, var_order = NULL, lambda = NULL, nlambda = 100L, grid.size = p,
                                    lambda.min.ratio = ifelse(n<p, 0.01, 0.0001), thresh=1e-10, maxit=1e5, mc.cores=1, return.full.beta = FALSE, 
                                    silent = TRUE, fold_assign = NULL ) {
   # simple wrapper to perform cross-validation and return the best model 
@@ -48,11 +48,11 @@ cv_grid_lasso_logistic = function( x = NULL, y, K = 5, var_order = NULL, lambda 
   if ( is.null(fold_assign) ) fold_assign = ceiling(K * (sample(1:n) / n))
   if ( silent == F ) print(paste0("Fitting models in parallel with ", mc.cores, " cores"))
   if ( mc.cores > 1 ) {
-    fits = parallel::mclapply(1:K, function(k) grid_lasso_logistic(x[ which(fold_assign != k), ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
+    fits = parallel::mclapply(1:K, function(k) order_lasso_logistic(x[ which(fold_assign != k), ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
                                                                    nlambda = nlambda, lambda.min.ratio = lambda.min.ratio, thresh = thresh, maxit = maxit), mc.cores = mc.cores)
   } else {
     fits = list()
-    for ( k in 1:K ) fits[[ k ]] = grid_lasso_logistic(x[ which(fold_assign != k), ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
+    for ( k in 1:K ) fits[[ k ]] = order_lasso_logistic(x[ which(fold_assign != k), ], y[ which(fold_assign != k) ], var_order = var_order, grid.size = grid.size, 
                                                        nlambda = nlambda, lambda.min.ratio = lambda.min.ratio, thresh = thresh, maxit = maxit)
   }
   
@@ -81,12 +81,12 @@ cv_grid_lasso_logistic = function( x = NULL, y, K = 5, var_order = NULL, lambda 
   fullcv_err = fullcv_err / n
   best.model = which(fullcv_err == min(fullcv_err), arr.ind = T)[ 1, ]
   if ( silent == F ) print(paste0("Fitting final model"))
-  fits = grid_lasso_logistic(x, y, var_order = var_order, grid.size = grid.size, grid.size.truncate = best.model[ 1 ], nlambda = nlambda, lambda.min.ratio = lambda.min.ratio)
+  fits = order_lasso_logistic(x, y, var_order = var_order, grid.size = grid.size, grid.size.truncate = best.model[ 1 ], nlambda = nlambda, lambda.min.ratio = lambda.min.ratio)
   fit = fits[[ best.model[ 1 ] ]]
   fit$best = best.model[ 2 ]
   # if ( return.full.beta ) { fit$beta.full = fits$beta }
   # fit$beta = fit$beta[ , best.model[ 2 ], drop = FALSE ]
   fit$cv = fullcv_err
-  attr(fit,"class")<-"cv_grid_lasso_logistic" 
+  attr(fit,"class")<-"cv_order_lasso_logistic" 
   return(fit)
 }
